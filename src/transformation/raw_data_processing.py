@@ -6,7 +6,6 @@ Deliverable:
     Analyze RFGRNT of HRCH system trend points to correlate HRCH alarm status.
 '''
 #Import modules
-from msilib.schema import Class
 import os
 from pathlib import Path
 import pandas as pd
