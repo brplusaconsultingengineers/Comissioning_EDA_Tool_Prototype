@@ -37,6 +37,7 @@ def prepare_BAS_for_altair_chart(df, baseload_max=None):
     """
     source_df = df.copy()
     source_df = source_df.reset_index()
+    source_df.rename(columns={ source_df.columns[1]: "index" }, inplace = True)
     return source_df
 
 def read_BAS(DIR_DATA, dropna=True):
