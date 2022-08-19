@@ -89,8 +89,9 @@ if (input_file is not None) and input_file.name.endswith(".csv"):
     df = pd.read_csv(input_file, index_col=0, parse_dates=True).dropna()
     print(df.info())
 else:
-    st.stop("Dataframe Must be date-time Indexed.")
-
+    st.warning("Dataframe Must be date-time Indexed.")
+    st.stop()
+    
 # make an instance of the class.
 BAS_object = BASdata()
 
