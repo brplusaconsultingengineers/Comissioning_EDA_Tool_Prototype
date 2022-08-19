@@ -1,4 +1,4 @@
-﻿altiar==4.2.0
+﻿altair==4.2.0
 datetime==4.5.0
 matplotlib==3.5.1
 numpy==1.19.2
