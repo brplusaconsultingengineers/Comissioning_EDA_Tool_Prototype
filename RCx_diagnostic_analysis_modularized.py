@@ -79,7 +79,7 @@ st.image(image, width=200)
 color_range = ["crimson", "orange", "green", 'black', "blue", "red", "magenta"] #expand for additional colors if needed for lineplots
 ESTIMATOR_TYPES = ["smart defaults", "custom"]
 # title
-st.title("Comissioning EDA Tool Prototype")
+st.title("MB-Comissioning EDA Tool Prototype")
 
 # User input for BAS file directory
 input_file = st.file_uploader(
