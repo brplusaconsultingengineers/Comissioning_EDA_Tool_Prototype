@@ -71,7 +71,7 @@ from src.Chart_functions import get_chart
 import plotly.figure_factory as ff
 
 #%% Establish root filepath for reference
-ROOT_PATH = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+ROOT_PATH = os.getcwd()
 #Set tool header with image
 image = Image.open(os.path.join(ROOT_PATH, "media/BR+A_graphic_3.jpg"))
 st.image(image, width=200)
