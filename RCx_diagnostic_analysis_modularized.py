@@ -83,7 +83,7 @@ st.title("MB-Comissioning EDA Tool Prototype")
 
 # User input for BAS file directory
 input_file = st.file_uploader(
-            "Upload BAS data .csv file. Data must be datetime-indexed.", type=["csv"]
+            "Upload BAS data .csv file.", type=["csv"]
             )
 if (input_file is not None) and input_file.name.endswith(".csv"):
     df = pd.read_csv(input_file, index_col=0, parse_dates=True).dropna()
@@ -91,7 +91,7 @@ if (input_file is not None) and input_file.name.endswith(".csv"):
 else:
     st.warning("Dataframe Must be date-time Indexed.")
     st.stop()
-    
+
 # make an instance of the class.
 BAS_object = BASdata()
 

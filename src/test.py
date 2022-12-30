@@ -6,6 +6,12 @@ from path import Path
 import numpy as np
 from transformation.raw_data_processing import BASdata
 import seaborn as sns
+
+'''
+Add monthly bucket visualization of operational parameters
+X-axis changes
+Standardized MBCx report graphics and analytics
+'''
 #%%
 DIR_CWD = Path(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 FILEPATH =  DIR_CWD / "Data" / "processed" / "RFGRNT_HRCH_Data_Aligned_Raw.csv"
