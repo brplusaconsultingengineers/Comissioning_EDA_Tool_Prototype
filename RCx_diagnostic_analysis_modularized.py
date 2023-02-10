@@ -126,6 +126,7 @@ if show_time_series:
     #Prepare Dataframe for plotting
     altair_linechart_data = prepare_BAS_for_altair_chart(BAS_object.subset_data)
     print(altair_linechart_data.info())
+    print(altair_linechart_data.head())
     #Create Selection for parameters
     plot_selection = st.multiselect(label='Select Parameter', options=BAS_object.all_data.columns)
     print(plot_selection)

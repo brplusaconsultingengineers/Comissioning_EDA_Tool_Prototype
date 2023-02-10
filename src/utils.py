@@ -44,7 +44,9 @@ def prepare_BAS_for_altair_chart(df, baseload_max=None):
     source_df = df.copy()
     source_df = source_df.reset_index()
     #TODO rename first column after reindex to allow for variable header. Used for X axis Altair charting inputs.
-    # source_df.rename(columns={ source_df.columns[1]: "index" }, inplace = True)
+    # indexer_name = str(source_df.columns[0])
+    # source_df.rename(columns={'{indexer_name}': 'index'})
+    source_df.rename(columns={ source_df.columns[0]: "index" }, inplace = True)
     return source_df
 
 def read_BAS(DIR_DATA, dropna=True):
