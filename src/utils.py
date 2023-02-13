@@ -90,3 +90,11 @@ def create_categorical_variables(df):
 
 
     return df
+
+def handl_str_altair(df):
+    for col in df:
+        if type(df['col']) == 'string':
+            #TODO convert to 0, 100 values
+            pass
+    
+    return df

@@ -159,14 +159,24 @@ if show_time_series:
             st.write(f'Maximum Value of {i}: ', altair_linechart_data[f'{i}'].max())
             st.write(f'Date of Peak Load: ', BAS_object.subset_data[f'{i}'].idxmax())
     else:
+        #add index col to plot_selection
+        plot_selection = ["index"] + plot_selection
+        print('Selected params: ',plot_selection)
         #create chart for all parameter selection
         altair_linechart_data = altair_linechart_data[plot_selection]
+        print(altair_linechart_data.head())
+        print(altair_linechart_data.info())
+        altair_linechart_data_melt = altair_linechart_data.melt("index")
+        print("MELT: ", altair_linechart_data_melt.head())
+        print("MELT: ", altair_linechart_data_melt.info())
+        # TODO handle string "On / Off" parameter. Need to convert to 0 - 100
         chart = (
-            alt.Chart(altair_linechart_data)
+            alt.Chart(altair_linechart_data_melt)
             .mark_line()
             .encode(
                 x="index",
-                y="Parameter Value"
+                y="value",
+                color="variable"
             )
             .properties(width=700, height=400)
             .interactive()
