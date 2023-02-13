@@ -76,8 +76,9 @@ ROOT_PATH = os.getcwd()
 image = Image.open(os.path.join(ROOT_PATH, "media/BR+A_graphic_3.jpg"))
 st.image(image, width=200)
 # colors for graphics
-color_range = ["crimson", "orange", "green", 'black', "blue", "red", "magenta"] #expand for additional colors if needed for lineplots
-ESTIMATOR_TYPES = ["smart defaults", "custom"]
+color_range_ind = list(sns.color_palette("tab10", n_colors=12).as_hex())
+color_range_pairlist = (sns.color_palette("Paired", n_colors=12).as_hex())
+hue_range = list(sns.color_palette("flare", n_colors=20).as_hex())
 # title
 st.title("MB-Comissioning EDA Tool Prototype")
 
@@ -130,21 +131,52 @@ if show_time_series:
     #Create Selection for parameters
     plot_selection = st.multiselect(label='Select Parameter', options=BAS_object.all_data.columns)
     print(plot_selection)
+    lineplot_overlay = st.radio("Overlay plots?", options=['No', 'Yes'])
 # time-series BAS line plot
-#Column Headers cannot have any special characters: [], %, etc..
-    color_index=-1
-    for i in plot_selection:
-        color_index+=1
-        st.markdown(f"{i}")
-        #TODO Add hover for mouse with tool tip for interactive chart
+    if lineplot_overlay =='No':
+    #Column Headers cannot have any special characters: [], %, etc..
+        color_index=-1
+        for i in plot_selection:
+            color_index+=1
+            st.markdown(f"{i}")
+            #TODO Add hover for mouse with tool tip for interactive chart
+            #create individual chart for all parameter selection
+            chart = (
+                alt.Chart(altair_linechart_data)
+                .mark_line(color=color_range_ind[color_index])
+                .encode(
+                    x=alt.X(f"index:T", title="Date & Time"),
+                    y=alt.Y(f"{i}:Q", title=f"{i}"),
+                    tooltip=['index', f"{i}"]
+                )
+                .properties(width=700, height=400)
+                .interactive()
+                .configure_view(fill='#EEEEEE')
+            )
+
+            st.altair_chart(chart)
+            st.write(f'Minimum Value of {i}: ', altair_linechart_data[f'{i}'].min())
+            st.write(f'Maximum Value of {i}: ', altair_linechart_data[f'{i}'].max())
+            st.write(f'Date of Peak Load: ', BAS_object.subset_data[f'{i}'].idxmax())
+    else:
+        #add index col to plot_selection
+        plot_selection = ["index"] + plot_selection
+        print('Selected params: ',plot_selection)
         #create chart for all parameter selection
+        altair_linechart_data = altair_linechart_data[plot_selection]
+        print(altair_linechart_data.head())
+        print(altair_linechart_data.info())
+        altair_linechart_data_melt = altair_linechart_data.melt("index")
+        print("MELT: ", altair_linechart_data_melt.head())
+        print("MELT: ", altair_linechart_data_melt.info())
+        # TODO handle string "On / Off" parameter. Need to convert to 0 - 100
         chart = (
-            alt.Chart(altair_linechart_data)
-            .mark_line(color=color_range[color_index])
+            alt.Chart(altair_linechart_data_melt)
+            .mark_line()
             .encode(
-                x=alt.X(f"index:T", title="Date & Time"),
-                y=alt.Y(f"{i}:Q", title=f"{i}"),
-                tooltip=['index', f"{i}"]
+                x="index",
+                y="value",
+                color="variable"
             )
             .properties(width=700, height=400)
             .interactive()
@@ -152,9 +184,6 @@ if show_time_series:
         )
 
         st.altair_chart(chart)
-        st.write(f'Minimum Value of {i}: ', altair_linechart_data[f'{i}'].min())
-        st.write(f'Maximum Value of {i}: ', altair_linechart_data[f'{i}'].max())
-        st.write(f'Date of Peak Load: ', BAS_object.subset_data[f'{i}'].idxmax())
 
 # COMPARISON CHART
 #currently, indicator column is specified as last column of dataframe
@@ -163,6 +192,12 @@ show_comparison_series = st.checkbox("Show Comparison Plots?")
 if show_comparison_series:
     #Prepare Dataframe for plotting
     altair_scatterplot_data = prepare_BAS_for_altair_chart(BAS_object.subset_data)
+    #select hue index based on indicator value count for display
+    if len(altair_scatterplot_data[f"{indicator_param}"].value_counts() < 5):
+        hue_range = [hue_range[0], hue_range[10], hue_range[-1]]
+    else:
+        pass    
+    
     #Create Selection for parameters
     st.sidebar.markdown("Select BAS Parameters for Cross Comparison Plotting")
     col1, col2 = st.columns(2)
@@ -179,7 +214,7 @@ if show_comparison_series:
         .encode(
                 x=f"{X_plot_selection}",
                 y=f"{Y_plot_selection}",
-                color=alt.Color(f'{indicator_param}', scale=alt.Scale(range=color_range[0:3])), #create color scheme for indicator status
+                color=alt.Color(f'{indicator_param}', scale=alt.Scale(range=hue_range[:])),
                 tooltip=['index', f"{X_plot_selection}", f"{Y_plot_selection}", f"{indicator_param}"]
                 )
         .properties(width=700, height=400)
