@@ -170,18 +170,30 @@ if show_time_series:
         print("MELT: ", altair_linechart_data_melt.head())
         print("MELT: ", altair_linechart_data_melt.info())
         # TODO handle string "On / Off" parameter. Need to convert to 0 - 100
-        chart = (
-            alt.Chart(altair_linechart_data_melt)
-            .mark_line()
-            .encode(
-                x="index",
-                y="value",
-                color="variable"
-            )
-            .properties(width=700, height=400)
-            .interactive()
-            .configure_view(fill='#EEEEEE')
+        # Create a selection that chooses the nearest point & selects based on x-value
+        nearest = alt.selection(type='single', nearest=True, on='mouseover',
+                                fields=['index'], empty='none')
+        
+        line = alt.Chart(altair_linechart_data_melt).mark_line().encode(
+            x="index:Q",
+            y="value:Q",
+            color="variable"
         )
+        # Transparent selectors across the chart. This is what tells us
+        # the x-value of the cursor
+        selectors = alt.Chart(altair_linechart_data_melt).mark_point().encode(
+                                                                        x='index:Q',
+                                                                        opacity=alt.value(0),
+                                                                        ).add_selection(nearest)
+        # Draw points on the line, and highlight based on selection
+        points = line.mark_point().encode(opacity=alt.condition(nearest, alt.value(1), alt.value(0)))
+        # Draw text labels near the points, and highlight based on selection
+        text = line.mark_text(align='left', dx=5, dy=-5).encode(text=alt.condition(nearest, 'value:Q', alt.value(' ')))
+        # Draw a rule at the location of the selection
+        rules = alt.Chart(altair_linechart_data_melt).mark_rule(color='gray').encode(x='index:Q').transform_filter(nearest)
+        # Put the five layers into a chart and bind the data
+        chart = alt.layer(line, selectors, points, rules, text).interactive().properties(width=800, height=600).configure_view(fill='#EEEEEE')
+    
 
         st.altair_chart(chart)
 
@@ -347,6 +359,8 @@ if show_histogram_series:
                             .configure_view(fill='#EEEEEE')
                         )
     st.altair_chart(hist_chart, use_container_width=True)
-    st.write(altair_histogram_data.describe())
+    # print(altair_histogram_data_melt.head())
+    # st.caption("Mean Condenser Pressure by Pre/Post Periods: ", altair_histogram_data_melt.groupby("PrePost")['value'].mean())
+    
 
 # %%
